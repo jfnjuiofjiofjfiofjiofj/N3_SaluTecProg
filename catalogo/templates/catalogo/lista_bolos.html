@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Bolos</title>
+    <link rel="stylesheet" href="{% static 'catalogo/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Nossos deliciosos Bolos</h1>
+
+        <form method="GET">
+            <input
+                type="text"
+                name="busca"
+                placeholder="Pesquisar bolo pelo nome ou sabor"
+                value="{{ busca|default:'' }}"
+            >
+
+            <button type="submit">Pesquisar</button>
+        </form>
+
+        <a href="{% url 'catalogo:home' %}" class="btn">Voltar para a Home</a>
+        <br><br>
+
+        {% if bolos %}
+            <ul>
+                {% for bolo in bolos %}
+                    <li>
+                        <a href="{% url 'catalogo:detalhe_bolo' bolo.pk %}"><strong>{{bolo.nome}} [R${{bolo.preco}}]</strong></a>
+
+                        {% if user.is_authenticated %}
+                        <div class="actions">
+                            <a href="{% url 'catalogo:editar_bolo' bolo.pk %}" class="btn">Editar</a>
+                            <a href="{% url 'catalogo:apagar_bolo' bolo.pk %}" class="btn-danger">Apagar</a>
+                        </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhum bolo cadastrado.</p>
+        {% endif %}
+
+        <div class="paginacao">
+
+        {% if bolos.has_previous %}
+            <a href="?page={{ bolos.previous_page_number }}&busca={{ busca|default:'' }}">
+                Página anterior
+            </a>
+        {% endif %}
+
+        <span>
+            Página {{ bolos.number }} de {{ bolos.paginator.num_pages }}
+        </span>
+
+        {% if bolos.has_next %}
+            <a href="?page={{ bolos.next_page_number }}&busca={{ busca|default:'' }}">
+                Próxima página
+            </a>
+        {% endif %}
+
+        </div>
+    </div>
+
+
+</body>
+</html>
